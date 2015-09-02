@@ -31,11 +31,60 @@ var ticTacToeCmd = cli.Command{
 }
 
 func runTicTacToe(c *cli.Context) {
-	fmt.Print("TicTacToe")
-	isBoard(NewTicTacToeBoard())
+	b := NewTicTacToeBoard()
+
+	for {
+
+		fmt.Printf("%s", b.printBoard())
+
+		if win := b.checkForWin(); win != 0 {
+			if win == human {
+				fmt.Print("Player Wins\n")
+				return
+			}
+			fmt.Print("AI Wins\n")
+			return
+		}
+
+		if b.isHumanTurn() {
+
+			fmt.Print("Player Turn\n")
+			move := humanMove(b)
+
+			tempBoard, err := b.makeMove(move)
+			if err != nil {
+				fmt.Errorf("Error in making turn: |%v|", err)
+			}
+
+			b = tempBoard.(TicTacToeBoard)
+
+		} else {
+
+			fmt.Print("AI Turn\nCalculating move...\n")
+
+			move, err := DecideMove(BasicTicTacToeHeuristic, b, c.Int("runTime"))
+			if err != nil {
+				fmt.Errorf("Error in deciding move: |%v|", err)
+			}
+
+			tempBoard, err := b.makeMove(move)
+			if err != nil {
+				fmt.Errorf("Error in making turn: |%v|", err)
+			}
+
+			b = tempBoard.(TicTacToeBoard)
+		}
+	}
 }
 
-func isBoard(b Board) {
-	fmt.Printf(" IS A BOARD\n")
-	fmt.Printf("%s", b.printBoard())
+func humanMove(b Board) Move {
+	var x, y int
+	fmt.Scanf("%d %d", &x, &y)
+
+	move := Move{x - 1, y - 1, human}
+	if !b.isMoveValid(move) {
+		fmt.Print("That move was invalid\n")
+	}
+
+	return move
 }

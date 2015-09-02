@@ -2,9 +2,9 @@ package main
 
 // Board is a generic that can be used for many different games (with TicTacToe in mind)
 type Board interface {
-	possibleMoves() ([]Move, error)
+	possibleMoves() []Move
 	makeMove(a Move) (Board, error)
-	whoseTurn() bool
+	isHumanTurn() bool
 	checkForWin() player
 	printBoard() string
 	isMoveValid(a Move) bool
@@ -19,3 +19,6 @@ type Move struct {
 
 // -1 for player 0, 0 for empty, 1 for player 1
 type player int
+
+const human = -1
+const ai = 1

@@ -9,19 +9,20 @@ type TicTacToeBoard struct {
 	board [][]player
 }
 
+// NewTicTacToeBoard creates an empty TicTacToeBoard
 func NewTicTacToeBoard() TicTacToeBoard {
 	return TicTacToeBoard{
 		board: [][]player{{0, 0, 0}, {0, 0, 0}, {0, 0, 0}},
 	}
 }
 
-func (t TicTacToeBoard) possibleMoves() ([]Move, error) {
+func (t TicTacToeBoard) possibleMoves() []Move {
 	moves := make([]Move, 0, 9)
 
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
 
-			move := Move{x: i, y: j}
+			move := Move{x: i, y: j, mark: ai}
 			if t.isMoveValid(move) {
 				moves = append(moves, move)
 			}
@@ -29,7 +30,7 @@ func (t TicTacToeBoard) possibleMoves() ([]Move, error) {
 		}
 	}
 
-	return moves, nil
+	return moves
 }
 
 func (t TicTacToeBoard) makeMove(a Move) (Board, error) {
@@ -56,7 +57,7 @@ func updateBoard(oldBoard [][]player, a Move) TicTacToeBoard {
 	return updated
 }
 
-func (t TicTacToeBoard) whoseTurn() bool {
+func (t TicTacToeBoard) isHumanTurn() bool {
 
 	total := 0
 
@@ -66,7 +67,7 @@ func (t TicTacToeBoard) whoseTurn() bool {
 		}
 	}
 
-	return total != 0
+	return total == 0
 }
 
 func (t TicTacToeBoard) checkForWin() player {
@@ -80,7 +81,7 @@ func (t TicTacToeBoard) checkForWin() player {
 			total += int(t.board[i][j])
 		}
 
-		if total == 3 || total != -3 {
+		if total == 3 || total == -3 {
 			return player(total / 3)
 		}
 	}
@@ -93,7 +94,7 @@ func (t TicTacToeBoard) checkForWin() player {
 			total += int(t.board[i][j])
 		}
 
-		if total == 3 || total != -3 {
+		if total == 3 || total == -3 {
 			return player(total / 3)
 		}
 	}
@@ -103,7 +104,7 @@ func (t TicTacToeBoard) checkForWin() player {
 	for x := 0; x < 3; x++ {
 		total += int(t.board[x][x])
 	}
-	if total == 3 || total != -3 {
+	if total == 3 || total == -3 {
 		return player(total / 3)
 	}
 
@@ -112,7 +113,7 @@ func (t TicTacToeBoard) checkForWin() player {
 	for x := 0; x < 3; x++ {
 		total += int(t.board[2-x][x])
 	}
-	if total == 3 || total != -3 {
+	if total == 3 || total == -3 {
 		return player(total / 3)
 	}
 
@@ -121,19 +122,44 @@ func (t TicTacToeBoard) checkForWin() player {
 
 func (t TicTacToeBoard) printBoard() string {
 	board := ""
-	for i := 0; i < 3; i++ {
-		for j := 0; j < 3; j++ {
-			board = fmt.Sprintf(board, "%s %d ", board, int(t.board[i][j]))
+	for j := 0; j < 3; j++ {
+		for i := 0; i < 3; i++ {
+			board = fmt.Sprintf("%s %s ", board, intToChar(t.board[i][j]))
 		}
-		fmt.Println()
+		board += "\n"
 	}
 	return board
 }
 
 func (t TicTacToeBoard) isMoveValid(a Move) bool {
+
+	if !isProperIndex(a.x) {
+		return false
+	}
+	if !isProperIndex(a.y) {
+		return false
+	}
+
 	if t.board[a.x][a.y] == 0 {
 		return true
 	}
 
 	return false
+}
+
+func isProperIndex(val int) bool {
+	return val >= 0 && val <= 2
+}
+
+func intToChar(val player) string {
+	switch val {
+	case 1:
+		return "A"
+	case -1:
+		return "H"
+	case 0:
+		return "0"
+	}
+
+	return "."
 }
