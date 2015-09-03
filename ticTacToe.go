@@ -22,7 +22,12 @@ func (t TicTacToeBoard) possibleMoves() []Move {
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
 
-			move := Move{x: i, y: j, mark: ai}
+			mark := ai
+			if t.isHumanTurn() {
+				mark = human
+			}
+
+			move := Move{x: i, y: j, mark: player(mark)}
 			if t.isMoveValid(move) {
 				moves = append(moves, move)
 			}
@@ -67,7 +72,7 @@ func (t TicTacToeBoard) isHumanTurn() bool {
 		}
 	}
 
-	return total == 0
+	return total != human
 }
 
 func (t TicTacToeBoard) checkForWin() player {
@@ -153,9 +158,9 @@ func isProperIndex(val int) bool {
 
 func intToChar(val player) string {
 	switch val {
-	case 1:
+	case ai:
 		return "A"
-	case -1:
+	case human:
 		return "H"
 	case 0:
 		return "0"

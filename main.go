@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/codegangsta/cli"
@@ -70,7 +71,10 @@ func runTicTacToe(c *cli.Context) {
 			tempBoard, err := b.makeMove(move)
 			if err != nil {
 				fmt.Errorf("Error in making turn: |%v|", err)
+				log.Fatalf("WTFBOOM %d %d", int(move.x), int(move.y))
 			}
+
+			fmt.Printf("err: %v", err)
 
 			b = tempBoard.(TicTacToeBoard)
 		}
@@ -84,6 +88,7 @@ func humanMove(b Board) Move {
 	move := Move{x - 1, y - 1, human}
 	if !b.isMoveValid(move) {
 		fmt.Print("That move was invalid\n")
+		return humanMove(b)
 	}
 
 	return move
